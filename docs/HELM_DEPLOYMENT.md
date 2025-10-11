@@ -54,9 +54,60 @@ Before installing Surfer with Helm, ensure you have:
 
 ## Quick Start
 
-### Method 1: Using Helm with GitHub Container Registry Images
+### Method 1: Install from Helm Repository (Recommended)
 
-This is the recommended method for production deployments.
+This is the **easiest and recommended method** for production deployments. No need to clone the repository!
+
+```bash
+# Add the Surfer Helm repository
+helm repo add surfer https://mysticrenji.github.io/surfer/charts
+
+# Update Helm repositories
+helm repo update
+
+# Search for available charts
+helm search repo surfer
+
+# Install Surfer with minimal configuration
+helm install surfer surfer/surfer \
+  --namespace surfer \
+  --create-namespace \
+  --set secrets.googleClientId="YOUR_GOOGLE_CLIENT_ID" \
+  --set secrets.googleClientSecret="YOUR_GOOGLE_CLIENT_SECRET" \
+  --set ingress.hosts[0].host="surfer.yourdomain.com"
+```
+
+**Advantages:**
+- ✅ No repository cloning required
+- ✅ Automatic updates with `helm repo update`
+- ✅ Easy version management
+- ✅ Uses pre-built Docker images from GitHub Container Registry
+
+### Method 2: Install from Helm Repository with Custom Values
+
+For more control over the configuration:
+
+```bash
+# Add the Helm repository
+helm repo add surfer https://mysticrenji.github.io/surfer/charts
+helm repo update
+
+# Download default values for customization
+helm show values surfer/surfer > my-values.yaml
+
+# Edit my-values.yaml with your configurations
+nano my-values.yaml
+
+# Install with custom values
+helm install surfer surfer/surfer \
+  --namespace surfer \
+  --create-namespace \
+  --values my-values.yaml
+```
+
+### Method 3: Install from Cloned Repository
+
+If you want to customize the chart or use local development:
 
 ```bash
 # Clone the repository

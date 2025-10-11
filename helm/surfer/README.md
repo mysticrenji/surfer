@@ -11,49 +11,60 @@ This Helm chart deploys Surfer - a Kubernetes Management UI with Google SSO and 
 
 ## Installation
 
-### Quick Start
+### Method 1: Install from Helm Repository (Recommended)
 
-1. Add the Helm repository (if published):
+This is the easiest way to install Surfer. **No repository cloning required!**
+
+1. **Add the Helm repository:**
 ```bash
-helm repo add surfer https://mysticrenji.github.io/surfer
+helm repo add surfer https://mysticrenji.github.io/surfer/charts
 helm repo update
 ```
 
-2. Install the chart:
+2. **Install the chart:**
 ```bash
 helm install surfer surfer/surfer \
   --namespace surfer \
   --create-namespace \
   --set secrets.googleClientId="YOUR_CLIENT_ID" \
   --set secrets.googleClientSecret="YOUR_CLIENT_SECRET" \
-  --set secrets.googleRedirectUrl="https://your-domain.com/api/v1/auth/google/callback" \
-  --set secrets.jwtSecret="your-random-jwt-secret" \
   --set ingress.hosts[0].host="your-domain.com"
 ```
 
-### Local Installation
-
-If you have the chart source code:
-
+3. **Verify installation:**
 ```bash
-cd helm
-helm install surfer ./surfer \
-  --namespace surfer \
-  --create-namespace \
-  --values ./surfer/values.yaml
+kubectl get pods -n surfer
 ```
 
-### Install with custom values
+**Benefits:**
+- ✅ No cloning required
+- ✅ Automatic updates with `helm repo update`
+- ✅ Easy version management
+- ✅ Uses pre-built Docker images from GHCR
 
-Create a `custom-values.yaml` file:
+### Method 2: Install with Custom Values File
 
+For production deployments with custom configuration:
+
+1. **Add the Helm repository:**
+```bash
+helm repo add surfer https://mysticrenji.github.io/surfer/charts
+helm repo update
+```
+
+2. **Get the default values:**
+```bash
+helm show values surfer/surfer > custom-values.yaml
+```
+
+3. **Edit custom-values.yaml:**
 ```yaml
 secrets:
   googleClientId: "YOUR_CLIENT_ID"
   googleClientSecret: "YOUR_CLIENT_SECRET"
   googleRedirectUrl: "https://surfer.example.com/api/v1/auth/google/callback"
-  jwtSecret: "change-this-to-a-random-secret"
-  dbPassword: "secure-database-password"
+  jwtSecret: "$(openssl rand -base64 32)"
+  dbPassword: "$(openssl rand -base64 16)"
 
 ingress:
   enabled: true
@@ -78,10 +89,44 @@ frontend:
   replicaCount: 3
 ```
 
-Then install:
+4. **Install with custom values:**
+```bash
+helm install surfer surfer/surfer \
+  --namespace surfer \
+  --create-namespace \
+  --values custom-values.yaml
+```
+
+### Method 3: Local Installation from Source
+
+If you have cloned the repository or want to modify the chart:
 
 ```bash
-helm install surfer ./surfer -f custom-values.yaml --namespace surfer --create-namespace
+# Clone the repository
+git clone https://github.com/mysticrenji/surfer.git
+cd surfer/helm
+
+# Install the chart
+helm install surfer ./surfer \
+  --namespace surfer \
+  --create-namespace \
+  --values ./surfer/values.yaml
+```
+
+### Quick Commands
+
+```bash
+# List available chart versions
+helm search repo surfer --versions
+
+# Show chart information
+helm show chart surfer/surfer
+
+# Show all configurable values
+helm show values surfer/surfer
+
+# Show chart README
+helm show readme surfer/surfer
 ```
 
 ## Configuration
@@ -161,6 +206,24 @@ The following table lists the configurable parameters of the Surfer chart and th
 ## Upgrading
 
 To upgrade an existing release:
+
+### Upgrade from Helm Repository
+
+```bash
+# Update the Helm repository
+helm repo update
+
+# Upgrade to the latest version
+helm upgrade surfer surfer/surfer --namespace surfer
+
+# Or upgrade with custom values
+helm upgrade surfer surfer/surfer --namespace surfer --values custom-values.yaml
+
+# Upgrade to a specific version
+helm upgrade surfer surfer/surfer --namespace surfer --version 1.0.0
+```
+
+### Upgrade from Local Chart
 
 ```bash
 helm upgrade surfer ./surfer --namespace surfer

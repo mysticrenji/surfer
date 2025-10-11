@@ -46,20 +46,48 @@ Choose the installation method that best fits your needs:
 
 ### Helm Deployment
 
-The fastest way to deploy Surfer to your Kubernetes cluster:
+The **fastest and recommended way** to deploy Surfer to your Kubernetes cluster:
+
+#### Option 1: Install from Helm Repository (No Cloning Required!)
 
 ```bash
-# Install with Helm
+# Add the Surfer Helm repository
+helm repo add surfer https://mysticrenji.github.io/surfer/charts
+
+# Update Helm repositories
+helm repo update
+
+# Install Surfer
+helm install surfer surfer/surfer \
+  --namespace surfer \
+  --create-namespace \
+  --set secrets.googleClientId="YOUR_CLIENT_ID" \
+  --set secrets.googleClientSecret="YOUR_CLIENT_SECRET" \
+  --set ingress.hosts[0].host="surfer.yourdomain.com"
+
+# Check deployment status
+kubectl get pods -n surfer
+```
+
+**Benefits:**
+- ✅ No repository cloning required
+- ✅ Automatic updates with `helm repo update`
+- ✅ Easy version management
+- ✅ Uses pre-built Docker images
+
+#### Option 2: Install from Cloned Repository
+
+```bash
+# Clone and install
+git clone https://github.com/mysticrenji/surfer.git
+cd surfer
+
 helm install surfer ./helm/surfer \
   --namespace surfer \
   --create-namespace \
   --set secrets.googleClientId="YOUR_CLIENT_ID" \
   --set secrets.googleClientSecret="YOUR_CLIENT_SECRET" \
-  --set secrets.googleRedirectUrl="https://surfer.yourdomain.com/api/v1/auth/google/callback" \
   --set ingress.hosts[0].host="surfer.yourdomain.com"
-
-# Access your deployment
-kubectl get pods -n surfer
 ```
 
 📖 **[Full Helm Deployment Guide](docs/HELM_DEPLOYMENT.md)**
