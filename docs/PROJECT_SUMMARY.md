@@ -66,8 +66,8 @@ surfer/
 ### Using Quick Start Script (Recommended)
 
 ```bash
-# Clone the repository
-git clone https://github.com/mysticrenji/surfer.git
+# Clone the repository (replace with your repository URL)
+git clone <repository-url>
 cd surfer
 
 # Run the quick start script
