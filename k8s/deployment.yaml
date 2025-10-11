@@ -1,0 +1,291 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: surfer
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: surfer
+  namespace: surfer
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: surfer-cluster-role
+rules:
+  - apiGroups: [""]
+    resources: ["namespaces", "pods", "services", "configmaps", "secrets", "persistentvolumes", "persistentvolumeclaims"]
+    verbs: ["get", "list", "watch", "create", "update", "delete"]
+  - apiGroups: ["apps"]
+    resources: ["deployments", "statefulsets", "daemonsets", "replicasets"]
+    verbs: ["get", "list", "watch", "create", "update", "delete"]
+  - apiGroups: ["batch"]
+    resources: ["jobs", "cronjobs"]
+    verbs: ["get", "list", "watch", "create", "update", "delete"]
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["ingresses", "networkpolicies"]
+    verbs: ["get", "list", "watch", "create", "update", "delete"]
+  - apiGroups: [""]
+    resources: ["pods/log"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: surfer-cluster-role-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: surfer-cluster-role
+subjects:
+  - kind: ServiceAccount
+    name: surfer
+    namespace: surfer
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: surfer-secrets
+  namespace: surfer
+type: Opaque
+stringData:
+  # Update these values before deploying
+  GOOGLE_CLIENT_ID: "your-google-client-id"
+  GOOGLE_CLIENT_SECRET: "your-google-client-secret"
+  GOOGLE_REDIRECT_URL: "http://localhost:8080/api/v1/auth/google/callback"
+  JWT_SECRET: "your-jwt-secret-change-this"
+  DB_HOST: "postgres"
+  DB_PORT: "5432"
+  DB_USER: "surfer"
+  DB_PASSWORD: "surfer"
+  DB_NAME: "surfer"
+  DB_SSLMODE: "disable"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: surfer-config
+  namespace: surfer
+data:
+  PORT: "8080"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  namespace: surfer
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: surfer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: surfer-secrets
+                  key: DB_NAME
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: surfer-secrets
+                  key: DB_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: surfer-secrets
+                  key: DB_PASSWORD
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: postgres-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: surfer
+spec:
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: surfer-backend
+  namespace: surfer
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: surfer-backend
+  template:
+    metadata:
+      labels:
+        app: surfer-backend
+    spec:
+      serviceAccountName: surfer
+      containers:
+        - name: backend
+          image: surfer-backend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: surfer-config
+                  key: PORT
+            - name: GOOGLE_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: surfer-secrets
+                  key: GOOGLE_CLIENT_ID
+            - name: GOOGLE_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: surfer-secrets
+                  key: GOOGLE_CLIENT_SECRET
+            - name: GOOGLE_REDIRECT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: surfer-secrets
+                  key: GOOGLE_REDIRECT_URL
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: surfer-secrets
+                  key: JWT_SECRET
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: surfer-secrets
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: surfer-secrets
+                  key: DB_PORT
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: surfer-secrets
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: surfer-secrets
+                  key: DB_PASSWORD
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: surfer-secrets
+                  key: DB_NAME
+            - name: DB_SSLMODE
+              valueFrom:
+                secretKeyRef:
+                  name: surfer-secrets
+                  key: DB_SSLMODE
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: surfer-backend
+  namespace: surfer
+spec:
+  selector:
+    app: surfer-backend
+  ports:
+    - port: 8080
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: surfer-frontend
+  namespace: surfer
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: surfer-frontend
+  template:
+    metadata:
+      labels:
+        app: surfer-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: surfer-frontend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: surfer-frontend
+  namespace: surfer
+spec:
+  selector:
+    app: surfer-frontend
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: surfer-ingress
+  namespace: surfer
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: surfer.example.com  # Update this to your domain
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: surfer-backend
+                port:
+                  number: 8080
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: surfer-frontend
+                port:
+                  number: 80
