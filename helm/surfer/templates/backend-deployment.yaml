@@ -1,0 +1,108 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "surfer.fullname" . }}-backend
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "surfer.backend.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.backend.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "surfer.backend.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "surfer.backend.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "surfer.serviceAccountName" . }}
+      containers:
+        - name: backend
+          image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "surfer.fullname" . }}-config
+                  key: PORT
+            - name: GOOGLE_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "surfer.fullname" . }}-secrets
+                  key: GOOGLE_CLIENT_ID
+            - name: GOOGLE_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "surfer.fullname" . }}-secrets
+                  key: GOOGLE_CLIENT_SECRET
+            - name: GOOGLE_REDIRECT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "surfer.fullname" . }}-secrets
+                  key: GOOGLE_REDIRECT_URL
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "surfer.fullname" . }}-secrets
+                  key: JWT_SECRET
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "surfer.fullname" . }}-secrets
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "surfer.fullname" . }}-secrets
+                  key: DB_PORT
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "surfer.fullname" . }}-secrets
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "surfer.fullname" . }}-secrets
+                  key: DB_PASSWORD
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "surfer.fullname" . }}-secrets
+                  key: DB_NAME
+            - name: DB_SSLMODE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "surfer.fullname" . }}-secrets
+                  key: DB_SSLMODE
+          {{- if .Values.backend.livenessProbe.enabled }}
+          livenessProbe:
+            {{- toYaml .Values.backend.livenessProbe.httpGet | nindent 12 }}
+            initialDelaySeconds: {{ .Values.backend.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.backend.livenessProbe.periodSeconds }}
+          {{- end }}
+          {{- if .Values.backend.readinessProbe.enabled }}
+          readinessProbe:
+            {{- toYaml .Values.backend.readinessProbe.httpGet | nindent 12 }}
+            initialDelaySeconds: {{ .Values.backend.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.backend.readinessProbe.periodSeconds }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,5 +1,10 @@
 # 🏄 Surfer - Kubernetes Management UI
 
+[![Build and Push](https://github.com/mysticrenji/surfer/workflows/Build%20and%20Push%20Docker%20Images/badge.svg)](https://github.com/mysticrenji/surfer/actions/workflows/build-and-push.yml)
+[![Test Suite](https://github.com/mysticrenji/surfer/workflows/Test%20Suite/badge.svg)](https://github.com/mysticrenji/surfer/actions/workflows/test.yml)
+[![Release](https://github.com/mysticrenji/surfer/workflows/Release/badge.svg)](https://github.com/mysticrenji/surfer/actions/workflows/release.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A modern, self-hosted web application for managing multiple Kubernetes clusters in a single pane of glass with Google SSO authentication and admin approval workflow.
 
 ## Features
@@ -8,9 +13,11 @@ A modern, self-hosted web application for managing multiple Kubernetes clusters 
 - 👥 **Admin Approval System** - Admins can approve/reject user access
 - 🎯 **Multi-Cluster Management** - Connect and manage multiple Kubernetes clusters
 - 📊 **Resource Visualization** - View pods, deployments, services, and more
-- 🚀 **Self-Hosted** - Deploy in your own Kubernetes cluster
+- 🚀 **Self-Hosted** - Deploy in your own Kubernetes cluster with Helm
 - 🌐 **Accessible Anywhere** - Web-based UI accessible from any browser
 - 🔒 **Role-Based Access Control** - User and admin roles with different permissions
+- 🐳 **Container Images** - Pre-built Docker images published to GitHub Container Registry
+- ⚙️ **CI/CD Ready** - GitHub Actions workflows for automated testing and deployment
 
 ## Architecture
 
@@ -29,15 +36,37 @@ A modern, self-hosted web application for managing multiple Kubernetes clusters 
 
 ## Quick Start
 
-### Prerequisites
+### Installation Options
 
-- Go 1.21 or higher
-- Node.js 18 or higher
-- PostgreSQL 15 or higher
-- Docker and Docker Compose (for containerized deployment)
-- Kubernetes cluster (for production deployment)
+Choose the installation method that best fits your needs:
 
-### Local Development
+1. **[Helm Chart](#helm-deployment)** - Production deployment to Kubernetes (Recommended)
+2. **[Docker Compose](#docker-compose-deployment)** - Quick local testing
+3. **[Manual Setup](#manual-setup)** - Development environment
+
+### Helm Deployment
+
+The fastest way to deploy Surfer to your Kubernetes cluster:
+
+```bash
+# Install with Helm
+helm install surfer ./helm/surfer \
+  --namespace surfer \
+  --create-namespace \
+  --set secrets.googleClientId="YOUR_CLIENT_ID" \
+  --set secrets.googleClientSecret="YOUR_CLIENT_SECRET" \
+  --set secrets.googleRedirectUrl="https://surfer.yourdomain.com/api/v1/auth/google/callback" \
+  --set ingress.hosts[0].host="surfer.yourdomain.com"
+
+# Access your deployment
+kubectl get pods -n surfer
+```
+
+📖 **[Full Helm Deployment Guide](docs/HELM_DEPLOYMENT.md)**
+
+### Docker Compose Deployment
+
+For quick local testing with Docker Compose:
 
 1. **Clone the repository**
    ```bash
@@ -278,6 +307,29 @@ Admins have access to additional features:
    - Regularly review user permissions
    - Audit admin actions
 
+## Container Images
+
+Pre-built Docker images are automatically published to GitHub Container Registry:
+
+```bash
+# Pull backend image
+docker pull ghcr.io/mysticrenji/surfer-backend:latest
+
+# Pull frontend image
+docker pull ghcr.io/mysticrenji/surfer-frontend:latest
+
+# Use specific version
+docker pull ghcr.io/mysticrenji/surfer-backend:v1.0.0
+```
+
+Available tags:
+- `latest` - Latest stable release from main branch
+- `v1.0.0` - Semantic version tags
+- `main` - Latest commit from main branch
+- `develop` - Latest commit from develop branch
+
+📖 **[GitHub Actions CI/CD Guide](docs/GITHUB_ACTIONS.md)**
+
 ## Troubleshooting
 
 ### Backend Issues
@@ -296,6 +348,18 @@ Admins have access to additional features:
 - **Pods not starting**: Check logs with `kubectl logs -n surfer <pod-name>`
 - **Ingress not working**: Verify ingress controller is installed and configured
 - **Database persistence**: Ensure PVC is bound correctly
+
+## Documentation
+
+- 📘 [Architecture Overview](docs/ARCHITECTURE.md)
+- 🛠️ [Development Guide](docs/DEVELOPMENT.md)
+- 🚀 [Deployment Guide](docs/DEPLOYMENT.md)
+- ⎈ [Helm Deployment](docs/HELM_DEPLOYMENT.md)
+- 🔄 [GitHub Actions CI/CD](docs/GITHUB_ACTIONS.md)
+- 🔐 [Google OAuth Setup](docs/GOOGLE_OAUTH_SETUP.md)
+- 🎨 [Application UI Guide](docs/APPLICATION_UI_GUIDE.md)
+- 🧪 [Test Results](TEST_RESULTS.md)
+- 🤝 [Contributing Guidelines](CONTRIBUTING.md)
 
 ## Contributing
 

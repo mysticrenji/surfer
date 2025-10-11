@@ -1,0 +1,65 @@
+🏄 Surfer - Kubernetes Management UI
+
+Your release "{{ .Release.Name }}" has been deployed successfully!
+
+To access Surfer:
+
+{{- if .Values.ingress.enabled }}
+{{- range .Values.ingress.hosts }}
+  https://{{ .host }}
+{{- end }}
+{{- else }}
+
+1. Get the application URL by running these commands:
+{{- if contains "NodePort" .Values.frontend.service.type }}
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "surfer.fullname" . }}-frontend)
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo "Visit http://$NODE_IP:$NODE_PORT to access Surfer"
+{{- else if contains "LoadBalancer" .Values.frontend.service.type }}
+  NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "surfer.fullname" . }}-frontend --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+  echo "Visit http://$SERVICE_IP:{{ .Values.frontend.service.port }} to access Surfer"
+{{- else if contains "ClusterIP" .Values.frontend.service.type }}
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "surfer.name" . }},app.kubernetes.io/component=frontend" -o jsonpath="{.items[0].metadata.name}")
+  kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 3000:80
+  echo "Visit http://127.0.0.1:3000 to access Surfer"
+{{- end }}
+{{- end }}
+
+Configuration Steps:
+
+1. Update Google OAuth Credentials:
+   Before using Surfer, you must configure Google OAuth:
+   
+   a. Update the secrets:
+      kubectl create secret generic surfer-secrets \
+        --from-literal=GOOGLE_CLIENT_ID='your-client-id' \
+        --from-literal=GOOGLE_CLIENT_SECRET='your-client-secret' \
+        --from-literal=GOOGLE_REDIRECT_URL='https://your-domain/api/v1/auth/google/callback' \
+        --from-literal=JWT_SECRET='your-jwt-secret' \
+        --namespace {{ .Release.Namespace }} \
+        --dry-run=client -o yaml | kubectl apply -f -
+   
+   b. See docs/GOOGLE_OAUTH_SETUP.md for detailed instructions
+
+2. Check the status of your deployment:
+   kubectl get pods --namespace {{ .Release.Namespace }}
+
+3. View logs:
+   # Backend logs
+   kubectl logs -f deployment/{{ include "surfer.fullname" . }}-backend --namespace {{ .Release.Namespace }}
+   
+   # Frontend logs
+   kubectl logs -f deployment/{{ include "surfer.fullname" . }}-frontend --namespace {{ .Release.Namespace }}
+
+4. Add your first cluster:
+   - Login with your Google account
+   - Wait for admin approval (first user is auto-approved as admin)
+   - Navigate to Dashboard
+   - Click "Add Cluster" and provide your kubeconfig
+
+For more information:
+  Repository: https://github.com/mysticrenji/surfer
+  Documentation: https://github.com/mysticrenji/surfer/tree/main/docs
+
+Happy surfing! 🏄‍♂️

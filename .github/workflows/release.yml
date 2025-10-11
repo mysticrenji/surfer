@@ -1,0 +1,97 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: 'latest'
+
+      - name: Package Helm chart
+        run: |
+          helm package helm/surfer --destination ./helm-packages
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          echo "## What's Changed" > CHANGELOG.md
+          git log $(git describe --tags --abbrev=0 HEAD^)..HEAD --pretty=format:"* %s" >> CHANGELOG.md
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            helm-packages/*.tgz
+          body_path: CHANGELOG.md
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-helm-chart:
+    runs-on: ubuntu-latest
+    needs: create-release
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: 'latest'
+
+      - name: Package Helm chart
+        run: |
+          helm package helm/surfer --destination ./helm-packages
+
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Update Helm repository
+        run: |
+          mkdir -p gh-pages/charts
+          cp helm-packages/*.tgz gh-pages/charts/
+          cd gh-pages
+          helm repo index charts --url https://mysticrenji.github.io/surfer/charts
+          
+      - name: Commit and push changes
+        run: |
+          cd gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add charts/
+          git commit -m "Release Helm chart ${{ github.ref_name }}"
+          git push
+
+  update-docker-images:
+    runs-on: ubuntu-latest
+    needs: create-release
+    
+    steps:
+      - name: Trigger Docker image builds
+        run: |
+          echo "Docker images will be built by the build-and-push workflow"
+          echo "Triggered by tag: ${{ github.ref_name }}"
