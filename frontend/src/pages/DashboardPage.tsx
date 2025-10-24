@@ -13,7 +13,7 @@ import {
   IconButton,
   Tooltip,
 } from '@mui/material';
-import { 
+import {
   Add as AddIcon,
   CloudQueue as CloudIcon,
   Settings as SettingsIcon,
@@ -51,10 +51,10 @@ const DashboardPage: React.FC = () => {
       <Navbar />
       <Box sx={{ bgcolor: 'background.default', minHeight: 'calc(100vh - 64px)' }}>
         <Container maxWidth="lg" sx={{ py: 4 }}>
-          <Box 
-            display="flex" 
-            justifyContent="space-between" 
-            alignItems="center" 
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
             mb={4}
             sx={{
               pb: 2,
@@ -63,9 +63,9 @@ const DashboardPage: React.FC = () => {
             }}
           >
             <Box>
-              <Typography 
-                variant="h4" 
-                sx={{ 
+              <Typography
+                variant="h4"
+                sx={{
                   fontWeight: 700,
                   background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                   WebkitBackgroundClip: 'text',
@@ -99,8 +99,8 @@ const DashboardPage: React.FC = () => {
               <CircularProgress size={60} />
             </Box>
           ) : clusters.length === 0 ? (
-            <Card 
-              sx={{ 
+            <Card
+              sx={{
                 textAlign: 'center',
                 py: 8,
                 background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%)',
@@ -135,13 +135,13 @@ const DashboardPage: React.FC = () => {
               {clusters.map((cluster) => (
                 <Grid item xs={12} sm={6} lg={4} key={cluster.id}>
                   <Card
-                    sx={{ 
+                    sx={{
                       height: '100%',
                       display: 'flex',
                       flexDirection: 'column',
                       cursor: 'pointer',
                       transition: 'all 0.3s ease',
-                      '&:hover': { 
+                      '&:hover': {
                         transform: 'translateY(-4px)',
                         boxShadow: 8,
                       },
@@ -153,28 +153,28 @@ const DashboardPage: React.FC = () => {
                       <Box display="flex" alignItems="center" mb={2}>
                         <CloudIcon sx={{ fontSize: 40, color: 'primary.main', mr: 2 }} />
                         <Box sx={{ flexGrow: 1 }}>
-                          <Typography 
-                            variant="h6" 
-                            sx={{ 
+                          <Typography
+                            variant="h6"
+                            sx={{
                               fontWeight: 600,
                               mb: 0.5,
                             }}
                           >
                             {cluster.name}
                           </Typography>
-                          <Chip 
+                          <Chip
                             icon={<CheckCircleIcon />}
-                            label="Connected" 
-                            size="small" 
+                            label="Connected"
+                            size="small"
                             color="success"
                             sx={{ fontSize: '0.7rem' }}
                           />
                         </Box>
                       </Box>
-                      <Typography 
-                        variant="body2" 
+                      <Typography
+                        variant="body2"
                         color="text.secondary"
-                        sx={{ 
+                        sx={{
                           mb: 2,
                           minHeight: 40,
                           display: '-webkit-box',
@@ -185,9 +185,9 @@ const DashboardPage: React.FC = () => {
                       >
                         {cluster.description || 'No description provided'}
                       </Typography>
-                      <Box 
-                        sx={{ 
-                          p: 1.5, 
+                      <Box
+                        sx={{
+                          p: 1.5,
                           bgcolor: 'background.paper',
                           borderRadius: 2,
                           border: '1px solid',
@@ -197,9 +197,9 @@ const DashboardPage: React.FC = () => {
                         <Typography variant="caption" color="text.secondary" display="block">
                           Context
                         </Typography>
-                        <Typography 
-                          variant="body2" 
-                          sx={{ 
+                        <Typography
+                          variant="body2"
+                          sx={{
                             fontFamily: 'monospace',
                             fontWeight: 600,
                           }}
@@ -210,8 +210,8 @@ const DashboardPage: React.FC = () => {
                     </CardContent>
                     <CardActions sx={{ px: 2, pb: 2 }}>
                       <Tooltip title="Configure">
-                        <IconButton 
-                          size="small" 
+                        <IconButton
+                          size="small"
                           onClick={(e) => {
                             e.stopPropagation();
                             navigate(`/clusters/${cluster.id}/settings`);
@@ -221,8 +221,8 @@ const DashboardPage: React.FC = () => {
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="Delete">
-                        <IconButton 
-                          size="small" 
+                        <IconButton
+                          size="small"
                           color="error"
                           onClick={(e) => {
                             e.stopPropagation();

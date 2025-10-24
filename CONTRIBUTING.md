@@ -111,13 +111,13 @@ func (h *UserHandler) GetUser(c *gin.Context) {
         c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
         return
     }
-    
+
     var user models.User
     if err := h.db.First(&user, id).Error; err != nil {
         c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
         return
     }
-    
+
     c.JSON(http.StatusOK, user)
 }
 ```
@@ -164,10 +164,10 @@ func TestGetUser(t *testing.T) {
         t.Fatalf("Failed to create mock: %v", err)
     }
     defer db.Close()
-    
+
     // Test logic
     // ...
-    
+
     // Assertions
     if err := mock.ExpectationsWereMet(); err != nil {
         t.Errorf("Unfulfilled expectations: %v", err)
@@ -182,7 +182,7 @@ describe('UserCard', () => {
   it('renders user information', () => {
     const user = { id: 1, name: 'Test User', email: 'test@example.com' };
     render(<UserCard user={user} />);
-    
+
     expect(screen.getByText('Test User')).toBeInTheDocument();
     expect(screen.getByText('test@example.com')).toBeInTheDocument();
   });

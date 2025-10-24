@@ -89,7 +89,7 @@ ghcr.io/mysticrenji/surfer-backend:latest
 #### Backend Linting
 - Runs golangci-lint for code quality
 
-#### Frontend Linting  
+#### Frontend Linting
 - Runs ESLint if configured
 
 #### Security Scanning
@@ -293,7 +293,7 @@ import "testing"
 func TestMyFunction(t *testing.T) {
     result := MyFunction("input")
     expected := "expected output"
-    
+
     if result != expected {
         t.Errorf("Expected %s, got %s", expected, result)
     }

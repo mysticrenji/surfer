@@ -108,7 +108,7 @@ func (h *K8sHandler) GetPodLogs(c *gin.Context) {
 
 	namespace := c.Param("namespace")
 	podName := c.Param("pod")
-	
+
 	// Get optional query parameters
 	tailLines := int64(100)
 	if tail := c.Query("tail"); tail != "" {

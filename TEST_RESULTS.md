@@ -13,7 +13,7 @@ All backend tests have been implemented and are passing successfully.
 ### Test Coverage
 
 - **Models Package**: 7 tests - 100% pass rate
-- **Auth Package**: 8 tests - 100% pass rate  
+- **Auth Package**: 8 tests - 100% pass rate
 - **Middleware Package**: 9 tests - 100% pass rate
 
 ### Detailed Results

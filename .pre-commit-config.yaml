@@ -1,0 +1,27 @@
+repos:
+  # General file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+        exclude: 'helm/.*|\.github/workflows/.*|k8s/.*'
+      - id: check-added-large-files
+        args: ['--maxkb=1000']
+      - id: check-merge-conflict
+      - id: detect-private-key
+      - id: check-json
+      - id: check-case-conflict
+
+default_language_version:
+  python: python3
+
+ci:
+  autofix_commit_msg: 'chore(pre-commit): auto fixes from pre-commit.com hooks'
+  autofix_prs: true
+  autoupdate_branch: ''
+  autoupdate_commit_msg: 'chore(pre-commit): autoupdate pre-commit hooks'
+  autoupdate_schedule: weekly
+  skip: []
+  submodules: false

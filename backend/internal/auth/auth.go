@@ -50,10 +50,10 @@ func NewAuthService() *AuthService {
 func (a *AuthService) HandleGoogleLogin(c *gin.Context) {
 	state := generateRandomState()
 	url := a.config.AuthCodeURL(state)
-	
+
 	// Store state in cookie for verification
 	c.SetCookie("oauth_state", state, 300, "/", "", false, true)
-	
+
 	c.JSON(http.StatusOK, gin.H{
 		"url": url,
 	})
@@ -121,7 +121,7 @@ func GenerateToken(userID uint, email, role string) (string, error) {
 	if secret == "" {
 		secret = "your-secret-key-change-this"
 	}
-	
+
 	return token.SignedString([]byte(secret))
 }
 

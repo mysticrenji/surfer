@@ -26,7 +26,7 @@ Before installing Surfer with Helm, ensure you have:
    ```bash
    # Install Helm
    curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-   
+
    # Verify installation
    helm version
    ```

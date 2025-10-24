@@ -164,7 +164,7 @@ npm start
 ### Deployment Steps
 
 1. **Update Kubernetes secrets**
-   
+
    Edit `k8s/deployment.yaml` and update the following in the `surfer-secrets` Secret:
    ```yaml
    GOOGLE_CLIENT_ID: "your-google-client-id"
@@ -174,7 +174,7 @@ npm start
    ```
 
 2. **Update Ingress host**
-   
+
    Edit `k8s/deployment.yaml` and update the Ingress host:
    ```yaml
    spec:
@@ -186,7 +186,7 @@ npm start
    ```bash
    # Build backend
    docker build -f Dockerfile.backend -t surfer-backend:latest .
-   
+
    # Build frontend
    docker build -f Dockerfile.frontend -t surfer-frontend:latest .
    ```

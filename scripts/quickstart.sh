@@ -41,13 +41,13 @@ echo -e "${GREEN}✓ Docker Compose installed${NC}"
 if [ ! -f .env ]; then
     echo -e "${YELLOW}Creating .env file from template...${NC}"
     cp .env.example .env
-    
+
     echo -e "${BLUE}"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo "  ⚙️  Configuration Required"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo -e "${NC}"
-    
+
     echo "Before you can use Surfer, you need to:"
     echo ""
     echo "1. Setup Google OAuth credentials:"
@@ -59,7 +59,7 @@ if [ ! -f .env ]; then
     echo "   - GOOGLE_CLIENT_ID"
     echo "   - GOOGLE_CLIENT_SECRET"
     echo ""
-    
+
     read -p "Press Enter after you've configured .env file..."
 else
     echo -e "${GREEN}✓ .env file exists${NC}"

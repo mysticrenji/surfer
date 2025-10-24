@@ -250,7 +250,7 @@ kubectl config view --minify --raw
 
 1. **Cluster Name:** Enter a descriptive name
    - Example: "Production EKS Cluster"
-   
+
 2. **Description:** (Optional) Add context
    - Example: "Main production environment on AWS US-East-1"
 

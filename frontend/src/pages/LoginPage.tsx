@@ -40,10 +40,10 @@ const LoginPage: React.FC = () => {
       }}
     >
       <Container maxWidth="sm">
-        <Paper 
-          elevation={10} 
-          sx={{ 
-            p: 6, 
+        <Paper
+          elevation={10}
+          sx={{
+            p: 6,
             borderRadius: 4,
             textAlign: 'center',
             background: 'rgba(255, 255, 255, 0.98)',
@@ -54,9 +54,9 @@ const LoginPage: React.FC = () => {
             component="img"
             src="/logo.svg"
             alt="Surfer Logo"
-            sx={{ 
-              height: 100, 
-              width: 100, 
+            sx={{
+              height: 100,
+              width: 100,
               mx: 'auto',
               mb: 2,
               animation: 'float 3s ease-in-out infinite',
@@ -66,11 +66,11 @@ const LoginPage: React.FC = () => {
               },
             }}
           />
-          <Typography 
-            variant="h3" 
-            align="center" 
+          <Typography
+            variant="h3"
+            align="center"
             gutterBottom
-            sx={{ 
+            sx={{
               fontWeight: 700,
               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
               WebkitBackgroundClip: 'text',
@@ -80,18 +80,18 @@ const LoginPage: React.FC = () => {
           >
             Surfer
           </Typography>
-          <Typography 
-            variant="h6" 
-            align="center" 
-            color="text.secondary" 
+          <Typography
+            variant="h6"
+            align="center"
+            color="text.secondary"
             gutterBottom
             sx={{ mb: 3 }}
           >
             Kubernetes Management UI
           </Typography>
-          <Typography 
-            variant="body1" 
-            align="center" 
+          <Typography
+            variant="body1"
+            align="center"
             color="text.secondary"
             sx={{ mb: 4 }}
           >
@@ -103,7 +103,7 @@ const LoginPage: React.FC = () => {
             size="large"
             startIcon={<GoogleIcon />}
             onClick={handleGoogleLogin}
-            sx={{ 
+            sx={{
               py: 1.5,
               fontSize: '1.1rem',
               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -117,10 +117,10 @@ const LoginPage: React.FC = () => {
           >
             Sign in with Google
           </Button>
-          <Typography 
-            variant="caption" 
+          <Typography
+            variant="caption"
             display="block"
-            align="center" 
+            align="center"
             color="text.secondary"
             sx={{ mt: 3 }}
           >

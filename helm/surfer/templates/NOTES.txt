@@ -30,7 +30,7 @@ Configuration Steps:
 
 1. Update Google OAuth Credentials:
    Before using Surfer, you must configure Google OAuth:
-   
+
    a. Update the secrets:
       kubectl create secret generic surfer-secrets \
         --from-literal=GOOGLE_CLIENT_ID='your-client-id' \
@@ -39,7 +39,7 @@ Configuration Steps:
         --from-literal=JWT_SECRET='your-jwt-secret' \
         --namespace {{ .Release.Namespace }} \
         --dry-run=client -o yaml | kubectl apply -f -
-   
+
    b. See docs/GOOGLE_OAUTH_SETUP.md for detailed instructions
 
 2. Check the status of your deployment:
@@ -48,7 +48,7 @@ Configuration Steps:
 3. View logs:
    # Backend logs
    kubectl logs -f deployment/{{ include "surfer.fullname" . }}-backend --namespace {{ .Release.Namespace }}
-   
+
    # Frontend logs
    kubectl logs -f deployment/{{ include "surfer.fullname" . }}-frontend --namespace {{ .Release.Namespace }}
 

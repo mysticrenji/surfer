@@ -13,38 +13,38 @@ const Navbar: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <AppBar 
-      position="static" 
-      sx={{ 
+    <AppBar
+      position="static"
+      sx={{
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       }}
     >
       <Toolbar>
-        <Box 
-          sx={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            flexGrow: 1, 
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            flexGrow: 1,
             cursor: 'pointer',
             '&:hover': { opacity: 0.9 }
-          }} 
+          }}
           onClick={() => navigate('/dashboard')}
         >
           <Box
             component="img"
             src="/logo.svg"
             alt="Surfer Logo"
-            sx={{ 
-              height: 40, 
-              width: 40, 
+            sx={{
+              height: 40,
+              width: 40,
               mr: 2,
               filter: 'brightness(0) invert(1)',
             }}
           />
-          <Typography 
-            variant="h5" 
-            component="div" 
-            sx={{ 
+          <Typography
+            variant="h5"
+            component="div"
+            sx={{
               fontWeight: 700,
               letterSpacing: 1,
             }}
@@ -54,24 +54,24 @@ const Navbar: React.FC = () => {
         </Box>
         {user && (
           <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-            <Button 
-              color="inherit" 
+            <Button
+              color="inherit"
               onClick={() => navigate('/dashboard')}
               startIcon={<DashboardIcon />}
-              sx={{ 
-                '&:hover': { 
+              sx={{
+                '&:hover': {
                   backgroundColor: 'rgba(255, 255, 255, 0.1)',
                 }
               }}
             >
               Dashboard
             </Button>
-            <Button 
-              color="inherit" 
+            <Button
+              color="inherit"
               onClick={() => navigate('/clusters')}
               startIcon={<CloudIcon />}
-              sx={{ 
-                '&:hover': { 
+              sx={{
+                '&:hover': {
                   backgroundColor: 'rgba(255, 255, 255, 0.1)',
                 }
               }}
@@ -79,12 +79,12 @@ const Navbar: React.FC = () => {
               Clusters
             </Button>
             {user.role === 'admin' && (
-              <Button 
-                color="inherit" 
+              <Button
+                color="inherit"
                 onClick={() => navigate('/admin')}
                 startIcon={<AdminPanelSettingsIcon />}
-                sx={{ 
-                  '&:hover': { 
+                sx={{
+                  '&:hover': {
                     backgroundColor: 'rgba(255, 255, 255, 0.1)',
                   }
                 }}
@@ -92,17 +92,17 @@ const Navbar: React.FC = () => {
                 Admin
               </Button>
             )}
-            <Box sx={{ 
-              display: 'flex', 
-              alignItems: 'center', 
+            <Box sx={{
+              display: 'flex',
+              alignItems: 'center',
               ml: 2,
               pl: 2,
               borderLeft: '1px solid rgba(255, 255, 255, 0.2)'
             }}>
-              <Avatar 
-                sx={{ 
-                  width: 32, 
-                  height: 32, 
+              <Avatar
+                sx={{
+                  width: 32,
+                  height: 32,
                   mr: 1,
                   bgcolor: 'rgba(255, 255, 255, 0.2)',
                   fontSize: '0.9rem'
@@ -110,9 +110,9 @@ const Navbar: React.FC = () => {
               >
                 {user.name ? user.name.charAt(0).toUpperCase() : <PersonIcon />}
               </Avatar>
-              <Typography 
-                variant="body2" 
-                sx={{ 
+              <Typography
+                variant="body2"
+                sx={{
                   mr: 2,
                   maxWidth: 150,
                   overflow: 'hidden',
@@ -122,12 +122,12 @@ const Navbar: React.FC = () => {
               >
                 {user.name || user.email}
               </Typography>
-              <IconButton 
-                color="inherit" 
+              <IconButton
+                color="inherit"
                 onClick={logout}
                 size="small"
-                sx={{ 
-                  '&:hover': { 
+                sx={{
+                  '&:hover': {
                     backgroundColor: 'rgba(255, 255, 255, 0.1)',
                   }
                 }}

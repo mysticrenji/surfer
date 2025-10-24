@@ -30,7 +30,7 @@ import { Namespace, Pod, Deployment, Service } from '../types';
 const ClusterDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const clusterId = parseInt(id || '0');
-  
+
   const [tabValue, setTabValue] = useState(0);
   const [namespaces, setNamespaces] = useState<Namespace[]>([]);
   const [selectedNamespace, setSelectedNamespace] = useState<string>('default');
