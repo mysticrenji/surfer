@@ -1,9 +1,9 @@
+---
 name: Setup GitHub Pages for Helm Repository
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
     paths:
       - 'helm/surfer/**'
       - '.github/workflows/gh-pages-setup.yml'
@@ -16,13 +16,12 @@ permissions:
 
 jobs:
   setup-gh-pages:
+    name: Setup Helm Repository Pages
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Set up Helm
         uses: azure/setup-helm@v3
