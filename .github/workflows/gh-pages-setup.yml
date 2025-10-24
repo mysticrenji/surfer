@@ -1,9 +1,9 @@
+---
 name: Setup GitHub Pages for Helm Repository
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
     paths:
       - 'helm/surfer/**'
       - '.github/workflows/gh-pages-setup.yml'
@@ -16,13 +16,12 @@ permissions:
 
 jobs:
   setup-gh-pages:
+    name: Setup Helm Repository Pages
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Set up Helm
         uses: azure/setup-helm@v3
@@ -42,147 +41,9 @@ jobs:
           cd helm-repo
           helm repo index charts --url https://mysticrenji.github.io/surfer/charts
 
-      - name: Create repository README
+      - name: Copy repository index HTML
         run: |
-          cat > helm-repo/index.html << 'EOF'
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
-              <meta charset="UTF-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>Surfer Helm Repository</title>
-              <style>
-                  body {
-                      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-                      max-width: 900px;
-                      margin: 50px auto;
-                      padding: 20px;
-                      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                      color: #333;
-                  }
-                  .container {
-                      background: white;
-                      border-radius: 12px;
-                      padding: 40px;
-                      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-                  }
-                  h1 {
-                      color: #667eea;
-                      font-size: 2.5em;
-                      margin-bottom: 10px;
-                  }
-                  .subtitle {
-                      color: #666;
-                      font-size: 1.2em;
-                      margin-bottom: 30px;
-                  }
-                  pre {
-                      background: #f5f5f5;
-                      border-radius: 8px;
-                      padding: 20px;
-                      overflow-x: auto;
-                      border-left: 4px solid #667eea;
-                  }
-                  code {
-                      font-family: 'Monaco', 'Courier New', monospace;
-                      color: #333;
-                  }
-                  .section {
-                      margin: 30px 0;
-                  }
-                  .logo {
-                      width: 80px;
-                      height: 80px;
-                      margin-bottom: 20px;
-                  }
-                  a {
-                      color: #667eea;
-                      text-decoration: none;
-                  }
-                  a:hover {
-                      text-decoration: underline;
-                  }
-                  .badge {
-                      display: inline-block;
-                      background: #10b981;
-                      color: white;
-                      padding: 5px 15px;
-                      border-radius: 20px;
-                      font-size: 0.9em;
-                      margin: 5px;
-                  }
-              </style>
-          </head>
-          <body>
-              <div class="container">
-                  <h1>🏄 Surfer Helm Repository</h1>
-                  <p class="subtitle">Kubernetes Management UI with Google SSO</p>
-
-                  <div class="section">
-                      <span class="badge">Helm 3.x</span>
-                      <span class="badge">Kubernetes 1.20+</span>
-                      <span class="badge">Production Ready</span>
-                  </div>
-
-                  <div class="section">
-                      <h2>📦 Add the Helm Repository</h2>
-                      <pre><code>helm repo add surfer https://mysticrenji.github.io/surfer/charts
-helm repo update</code></pre>
-                  </div>
-
-                  <div class="section">
-                      <h2>🚀 Install Surfer</h2>
-                      <pre><code>helm install surfer surfer/surfer \
-  --namespace surfer \
-  --create-namespace \
-  --set secrets.googleClientId="YOUR_CLIENT_ID" \
-  --set secrets.googleClientSecret="YOUR_CLIENT_SECRET" \
-  --set ingress.hosts[0].host="surfer.yourdomain.com"</code></pre>
-                  </div>
-
-                  <div class="section">
-                      <h2>🔍 Search Available Charts</h2>
-                      <pre><code>helm search repo surfer</code></pre>
-                  </div>
-
-                  <div class="section">
-                      <h2>📋 Show Chart Information</h2>
-                      <pre><code>helm show chart surfer/surfer
-helm show values surfer/surfer</code></pre>
-                  </div>
-
-                  <div class="section">
-                      <h2>📚 Documentation</h2>
-                      <p>
-                          <a href="https://github.com/mysticrenji/surfer" target="_blank">📖 GitHub Repository</a><br>
-                          <a href="https://github.com/mysticrenji/surfer/blob/main/docs/HELM_DEPLOYMENT.md" target="_blank">🚀 Helm Deployment Guide</a><br>
-                          <a href="https://github.com/mysticrenji/surfer/blob/main/README.md" target="_blank">📘 README</a>
-                      </p>
-                  </div>
-
-                  <div class="section">
-                      <h2>✨ Features</h2>
-                      <ul>
-                          <li>🔐 Google OAuth2 SSO Authentication</li>
-                          <li>👥 Admin approval workflow for users</li>
-                          <li>☸️ Multi-cluster Kubernetes management</li>
-                          <li>📊 View pods, deployments, services, and namespaces</li>
-                          <li>📜 Pod log viewing</li>
-                          <li>🎨 Modern UI with Material Design</li>
-                          <li>🔒 Production-ready security with RBAC</li>
-                      </ul>
-                  </div>
-
-                  <div class="section">
-                      <p style="color: #666; font-size: 0.9em;">
-                          Maintained by <a href="https://github.com/mysticrenji">@mysticrenji</a><br>
-                          Licensed under MIT
-                      </p>
-                  </div>
-              </div>
-          </body>
-          </html>
-          EOF
+          cp helm-repo-index.html helm-repo/index.html
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
