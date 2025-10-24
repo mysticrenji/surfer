@@ -15,6 +15,7 @@
 # Frontend (Node/React)
 node_modules/
 /build
+frontend/build/
 /dist
 /.cache
 .DS_Store
