@@ -1,0 +1,27 @@
+apiVersion: v1
+entries:
+  surfer:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2025-10-24T21:26:05.093156524Z"
+    description: A Kubernetes Management UI with Google SSO and Admin Approval
+    digest: 8ebfe1bfad832d47cfc4984b7dec94d6ac8eab5bb09d591d34a7fe4759cb209f
+    home: https://github.com/mysticrenji/surfer
+    icon: https://raw.githubusercontent.com/mysticrenji/surfer/main/frontend/public/logo.svg
+    keywords:
+    - kubernetes
+    - management
+    - ui
+    - google-sso
+    - multi-cluster
+    maintainers:
+    - name: mysticrenji
+      url: https://github.com/mysticrenji
+    name: surfer
+    sources:
+    - https://github.com/mysticrenji/surfer
+    type: application
+    urls:
+    - https://mysticrenji.github.io/surfer/charts/surfer-1.0.0.tgz
+    version: 1.0.0
+generated: "2025-10-24T21:26:05.091998591Z"
