@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import '@testing-library/jest-dom';
 import { BrowserRouter } from 'react-router-dom';
 import LoginPage from './LoginPage';
 import { AuthProvider } from '../context/AuthContext';
@@ -90,20 +91,9 @@ describe('LoginPage', () => {
   });
 
   test('redirects approved user to dashboard', async () => {
-    await act(async () => {
-      render(
-        <BrowserRouter>
-          <AuthProvider>
-            <LoginPage />
-          </AuthProvider>
-        </BrowserRouter>
-      );
-    });
-
-    // Set user in AuthContext
-    const authContext = require('../context/AuthContext');
-    await act(async () => {
-      authContext.useAuth().setUser({
+    // Mock useAuth to return approved user
+    jest.spyOn(require('../context/AuthContext'), 'useAuth').mockReturnValue({
+      user: {
         id: 1,
         email: 'test@example.com',
         name: 'Test User',
@@ -113,27 +103,21 @@ describe('LoginPage', () => {
         google_id: '123',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-      });
+      },
+      loading: false,
+      setUser: jest.fn(),
+      logout: jest.fn(),
     });
+
+    renderLoginPage();
 
     expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
   });
 
   test('redirects pending user to pending approval page', async () => {
-    await act(async () => {
-      render(
-        <BrowserRouter>
-          <AuthProvider>
-            <LoginPage />
-          </AuthProvider>
-        </BrowserRouter>
-      );
-    });
-
-    // Set user in AuthContext
-    const authContext = require('../context/AuthContext');
-    await act(async () => {
-      authContext.useAuth().setUser({
+    // Mock useAuth to return pending user
+    jest.spyOn(require('../context/AuthContext'), 'useAuth').mockReturnValue({
+      user: {
         id: 1,
         email: 'test@example.com',
         name: 'Test User',
@@ -143,8 +127,13 @@ describe('LoginPage', () => {
         google_id: '123',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-      });
+      },
+      loading: false,
+      setUser: jest.fn(),
+      logout: jest.fn(),
     });
+
+    renderLoginPage();
 
     expect(mockNavigate).toHaveBeenCalledWith('/pending-approval');
   });

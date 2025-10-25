@@ -1,3 +1,4 @@
+import '@testing-library/jest-dom';
 import { authService, userService, clusterService, k8sService } from './index';
 import api from './api';
 

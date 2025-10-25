@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import '@testing-library/jest-dom';
 import { BrowserRouter } from 'react-router-dom';
 import DashboardPage from './DashboardPage';
 import { clusterService } from '../services';
@@ -71,7 +72,7 @@ describe('DashboardPage', () => {
 
   test('shows loading state', async () => {
     (clusterService.getClusters as jest.Mock).mockImplementation(
-      () => new Promise(resolve => setTimeout(resolve, 100))
+      () => new Promise(resolve => setTimeout(() => resolve([]), 100))
     );
 
     renderDashboardPage();
@@ -127,10 +128,13 @@ describe('DashboardPage', () => {
     renderDashboardPage();
 
     await waitFor(() => {
-      expect(screen.getAllByTitle('Configure')[0]).toBeInTheDocument();
+      expect(screen.getByText('Test Cluster 1')).toBeInTheDocument();
     });
 
-    const settingsButton = screen.getAllByTitle('Configure')[0];
+    // Find settings button by its icon
+    const settingsButton = screen.getAllByTestId('SettingsIcon')[0].closest('button');
+    if (!settingsButton) throw new Error('Settings button not found');
+
     await act(async () => {
       await userEvent.click(settingsButton);
     });

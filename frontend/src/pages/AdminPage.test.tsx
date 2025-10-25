@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import '@testing-library/jest-dom';
 import { BrowserRouter } from 'react-router-dom';
 import AdminPage from './AdminPage';
 import { userService } from '../services';
@@ -70,7 +71,7 @@ describe('AdminPage', () => {
 
   test('shows loading state', async () => {
     (userService.getPendingUsers as jest.Mock).mockImplementation(
-      () => new Promise(resolve => setTimeout(resolve, 100))
+      () => new Promise(resolve => setTimeout(() => resolve([]), 100))
     );
 
     renderAdminPage();

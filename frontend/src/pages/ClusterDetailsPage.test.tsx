@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import '@testing-library/jest-dom';
 import { BrowserRouter } from 'react-router-dom';
 import ClusterDetailsPage from './ClusterDetailsPage';
 import { k8sService } from '../services';
