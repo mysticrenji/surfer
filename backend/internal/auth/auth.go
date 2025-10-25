@@ -51,8 +51,8 @@ func (a *AuthService) HandleGoogleLogin(c *gin.Context) {
 	state := generateRandomState()
 	url := a.config.AuthCodeURL(state)
 
-	// Store state in cookie for verification
-	c.SetCookie("oauth_state", state, 300, "/", "", false, true)
+	// Store state in cookie for verification - make it accessible from localhost
+	c.SetCookie("oauth_state", state, 300, "/", "localhost", false, true)
 
 	c.JSON(http.StatusOK, gin.H{
 		"url": url,
