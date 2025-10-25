@@ -185,18 +185,15 @@ func (a *AuthService) cleanupExpiredStates() {
 	ticker := time.NewTicker(5 * time.Minute) // Clean up every 5 minutes
 	defer ticker.Stop()
 
-	for {
-		select {
-		case <-ticker.C:
-			now := time.Now()
-			a.mutex.Lock()
-			for state, expiration := range a.states {
-				if now.After(expiration) {
-					delete(a.states, state)
-				}
+	for range ticker.C {
+		now := time.Now()
+		a.mutex.Lock()
+		for state, expiration := range a.states {
+			if now.After(expiration) {
+				delete(a.states, state)
 			}
-			a.mutex.Unlock()
 		}
+		a.mutex.Unlock()
 	}
 }
 

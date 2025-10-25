@@ -56,6 +56,6 @@ describe('Navbar', () => {
       </BrowserRouter>
     );
 
-    expect(screen.getByText('Logout')).toBeInTheDocument();
+    expect(screen.getByTitle('Logout')).toBeInTheDocument();
   });
 });
