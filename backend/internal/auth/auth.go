@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -16,6 +17,8 @@ import (
 
 type AuthService struct {
 	config *oauth2.Config
+	states map[string]time.Time
+	mutex  sync.RWMutex
 }
 
 type GoogleUser struct {
@@ -44,15 +47,29 @@ func NewAuthService() *AuthService {
 		Endpoint: google.Endpoint,
 	}
 
-	return &AuthService{config: config}
+	authService := &AuthService{
+		config: config,
+		states: make(map[string]time.Time),
+		mutex:  sync.RWMutex{},
+	}
+
+	// Start cleanup goroutine for expired states
+	go authService.cleanupExpiredStates()
+
+	return authService
 }
 
 func (a *AuthService) HandleGoogleLogin(c *gin.Context) {
 	state := generateRandomState()
 	url := a.config.AuthCodeURL(state)
 
-	// Store state in cookie for verification
-	c.SetCookie("oauth_state", state, 300, "/", "", false, true)
+	// Store state in memory with expiration (5 minutes)
+	a.mutex.Lock()
+	a.states[state] = time.Now().Add(5 * time.Minute)
+	a.mutex.Unlock()
+
+	// Also store in cookie for backward compatibility
+	c.SetCookie("oauth_state", state, 300, "/", "localhost", false, true)
 
 	c.JSON(http.StatusOK, gin.H{
 		"url": url,
@@ -60,13 +77,27 @@ func (a *AuthService) HandleGoogleLogin(c *gin.Context) {
 }
 
 func (a *AuthService) HandleGoogleCallback(c *gin.Context) {
-	// Verify state
+	// Verify state using in-memory store
 	state := c.Query("state")
-	cookieState, err := c.Cookie("oauth_state")
-	if err != nil || state != cookieState {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid state"})
+	if state == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing state parameter"})
 		return
 	}
+
+	// Check if state exists and is not expired
+	a.mutex.RLock()
+	expiration, exists := a.states[state]
+	a.mutex.RUnlock()
+
+	if !exists || time.Now().After(expiration) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid or expired state"})
+		return
+	}
+
+	// Remove the used state
+	a.mutex.Lock()
+	delete(a.states, state)
+	a.mutex.Unlock()
 
 	// Exchange code for token
 	code := c.Query("code")
@@ -147,6 +178,23 @@ func ValidateToken(tokenString string) (*Claims, error) {
 	}
 
 	return nil, fmt.Errorf("invalid token")
+}
+
+// cleanupExpiredStates periodically removes expired states from memory
+func (a *AuthService) cleanupExpiredStates() {
+	ticker := time.NewTicker(5 * time.Minute) // Clean up every 5 minutes
+	defer ticker.Stop()
+
+	for range ticker.C {
+		now := time.Now()
+		a.mutex.Lock()
+		for state, expiration := range a.states {
+			if now.After(expiration) {
+				delete(a.states, state)
+			}
+		}
+		a.mutex.Unlock()
+	}
 }
 
 func generateRandomState() string {
